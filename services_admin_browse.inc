@@ -126,7 +126,7 @@ function services_admin_browse_test() {
     switch ($arg['#name']) {
  
       case 'hash':
-        $form['arg'][$key] = array('#title' => 'Hash', '#type' => 'textfield', '#default_value' => hash_hmac("sha256", $timestamp . $_SERVER['HTTP_HOST'] . $nonce . arg(4), services_admin_browse_get_first_key()));
+        $form['arg'][$key] = array('#title' => 'Hash', '#type' => 'textfield', '#default_value'  => hash_hmac('sha256', $timestamp .';'. $_SERVER['HTTP_HOST'] .';'. $nonce .';'. arg(4), services_admin_browse_get_first_key()));
         break;
       
       case 'sessid':
