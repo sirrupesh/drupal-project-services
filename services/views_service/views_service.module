@@ -40,6 +40,26 @@ function views_service_service() {
           '#type'         => 'array',
           '#optional'     => TRUE,
           '#description'  => t('An array of arguments to pass to the view.'))),
+        array(
+          '#name'        => 'limit',
+          '#type'        => 'int',
+          '#optional'    => TRUE,
+          '#description' => t('How many elements should be build by page')),
+        array(
+          '#name'        => 'page',
+          '#type'        => 'int',
+          '#optional'    => TRUE,
+          '#description' => t('If you use pager, which page to start')),
+        array(
+          '#name'        => 'offset',
+          '#type'        => 'int',
+          '#optional'    => TRUE,
+          '#description' => t('If pager is false, skip the first $offset results.')),
+        array(
+          '#name'        => 'filters',
+          '#type'        => 'array',
+          '#optional'    => TRUE,
+          '#description' => t('An array of exposed filter ops and values to use with the exposed filter system')),
       '#return'   => 'array',
       '#help'     => t('Retrieves a view defined in views.module.')),
 
@@ -83,7 +103,7 @@ function views_service_service() {
 /**
  * Get a view from the database.
  */
-function views_service_get_view($view_name, $fields = array(), $args = array()) { 
+function views_service_get_view($view_name, $fields = array(), $args = array(), $limit = 0, $page = 0, $offset = 0, $filters = NULL) {
   $view = views_get_view($view_name);
   if (is_null($view)) {
     return services_error('View does not exist.');
@@ -94,7 +114,7 @@ function views_service_get_view($view_name, $fields = array(), $args = array()) 
     return services_error('You do not have access to this view.');
   }
   
-  $result = views_build_view('result', $view, $args);
+  $result = views_build_view('result', $view, $args, FALSE, $limit, $page, $offset, $filters);
   while ($node = db_fetch_object($result['result'])) {
     $nodes[] = services_node_load(node_load(array('nid' => $node->nid)), $fields);
   }
