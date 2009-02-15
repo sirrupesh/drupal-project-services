@@ -331,7 +331,7 @@ function services_error($message) {
 function services_cron() {
   
   $expiry_time = time() - variable_get('services_key_expiry', 30);
-  db_query("DELETE FROM {services_timestamp_nonce} WHERE timestamp < %d", $expiry_time);
+  db_query("DELETE FROM {services_timestamp_nonce} WHERE timestamp < '%s'", $expiry_time);
 }
 
 /**
