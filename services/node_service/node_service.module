@@ -30,7 +30,6 @@ function node_service_service() {
     array(
       '#method'   => 'node.load',
       '#callback' => 'node_service_load',
-      '#key'      => FALSE,
       '#access callback' => 'node_service_load_access',
       '#args'     => array(
         array(
