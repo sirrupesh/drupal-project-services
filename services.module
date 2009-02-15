@@ -577,13 +577,7 @@ function services_node_load($node, $fields = array()) {
   if (!$node->nid) {
     return NULL;
   }
-
-  // Apply filters to fields.
-  $body = $node->body;
-  $node->body = new stdClass();
-  $node->body_value = $body;
-  $node->body = check_markup($body, $node->format, FALSE);
-
+  
   // Loop through and get only requested fields.
   if (count($fields) > 0) {
     foreach ($fields as $field) {
