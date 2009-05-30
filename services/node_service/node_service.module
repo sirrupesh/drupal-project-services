@@ -136,7 +136,7 @@ function node_service_save($edit) {
   if ($edit['nid']) {
     $node = node_load($edit['nid']);
     if ($node->nid) {
-      $ret = drupal_execute($node->type .'_node_form', $edit, $edit);
+      $ret = drupal_execute($node->type .'_node_form', $edit, $node);
       $nid = $node->nid;
     }
   }
