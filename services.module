@@ -350,7 +350,12 @@ function services_method_call($method_name, $args = array(), $ignore_hash = FALS
   foreach ($method['#args'] as $key => $arg) {
     if (!$arg['#optional']) {
       if (!isset($args[$key]) && !is_array($args[$key]) && !is_bool($args[$key])) {
-        return services_error(t('Missing required arguments.'));
+        if ($arg['#name'] == 'sessid' && session_id()) {
+          $args[$key] = session_id();
+        } 
+        else {
+          return services_error(t('Missing required arguments.'));
+        }
       }
     }
     // Key is part of the hash
