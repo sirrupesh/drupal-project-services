@@ -22,10 +22,10 @@ function services_keyauth_admin_keys_list() {
     $operations = array();
 
     // Set the edit column.
-    $operations[] = array('data' => l(t('edit'), 'admin/build/services/keys/'. $kid));
+    $operations[] = array('data' => l(t('edit'), 'admin/build/services/keys/' . $kid));
 
     // Set the delete column.
-    $operations[] = array('data' => l(t('delete'), 'admin/build/services/keys/'. $kid .'/delete'));
+    $operations[] = array('data' => l(t('delete'), 'admin/build/services/keys/' . $kid .'/delete'));
 
     foreach ($operations as $operation) {
       $row[] = $operation;
@@ -33,17 +33,16 @@ function services_keyauth_admin_keys_list() {
     $rows[] = $row;
   }
 
-  if (empty($rows)) {
+  if (!count($rows)) {
     $rows[] = array(array('data' => t('No API keys created.'), 'colspan' => '5', 'class' => 'message'));
   }
 
-  return theme('table', $header, $rows);
+  return theme('table', array('header' => $header, 'rows' => $rows));
 }
 
 function services_keyauth_admin_keys_form() {
   $kid = arg(4);
-
-  $key = db_fetch_object(db_query("SELECT * FROM {services_keys} WHERE kid = '%s'", $kid));
+  $key = db_query("SELECT * FROM {services_keys} WHERE kid = :key", array(':key' => $kid))->fetchObject();
 
   $key_kid = isset($key->kid) ? $key->kid : '';
   $key_title = isset($key->title) ? $key->title : '';
@@ -57,10 +56,10 @@ function services_keyauth_admin_keys_form() {
     $form['key'] = array(
       '#type'           => 'markup',
       '#title'          => t('Key'),
-      '#value'          => '<strong>'. t('API Key') .':</strong> '. $key_kid,
+      '#value'          => '<strong>'. t('API Key') . ':</strong> ' . $key_kid,
     );
-    $result = db_query("SELECT method FROM {services_key_permissions} WHERE kid = '%s'", $key->kid);
-    while ($kid = db_fetch_object($result)) {
+    $result = db_query("SELECT method FROM {services_key_permissions} WHERE kid = :key", array(':key' => $kid));
+    while ($kid = $result->fetchObject()) {
       $accessible_methods[] = $kid->method;
     }
   }
@@ -80,6 +79,9 @@ function services_keyauth_admin_keys_form() {
   );
   
   $methods = services_get_all();
+
+  $form_methods = array();
+
   foreach ($methods as $method) {
     $form_methods[$method['#method']] = $method['#method'];
   }
@@ -93,8 +95,8 @@ function services_keyauth_admin_keys_form() {
   );
 
   $form['submit'] = array(
-    '#type'           => 'submit',
-    '#value'          => $key_title != '' ? t('Save key') : t('Create key'),
+    '#type' => 'submit',
+    '#value' => $key_title != '' ? t('Save key') : t('Create key'),
   );
 
   return $form;
@@ -107,36 +109,57 @@ function services_keyauth_admin_keys_form_submit($form, &$form_state) {
 }
 
 function services_keyauth_admin_keys_save(&$key) {
-  $is_existing = FALSE;
   $key['kid'] = !empty($key['kid']) ? $key['kid'] : md5(uniqid(mt_rand(), TRUE));
-  $is_existing =  db_result(db_query("SELECT count(*) FROM {services_keys}
-    WHERE kid = '%s'", $key['kid']));
 
+  $is_existing = (bool) db_query_range("SELECT 1 FROM {services_keys} WHERE kid = :kid", 0, 1, array(':kid' => $key['kid']))->fetchField();
   if ($is_existing) {
-    db_query("UPDATE {services_keys} SET title = '%s', domain = '%s'
-      WHERE kid = '%s'", $key['title'], $key['domain'], $key['kid']);
-    db_query("DELETE FROM {services_key_permissions} WHERE kid = '%s'", $key['kid']);
+    db_update('services_keys')
+      ->fields(array(
+        'title' => $key['title'],
+        'domain' => $key['domain'],
+      ))
+      ->condition('kid', $key['kid'], '=')
+      ->execute();
+    db_delete('services_key_permissions')
+      ->condition('kid', $key['kid'])
+      ->execute();
     $return = SAVED_UPDATED;
   }
   else {
-    db_query("INSERT INTO {services_keys} (kid, title, domain)
-      VALUES ('%s', '%s', '%s')", $key['kid'], $key['title'], $key['domain']);
+    db_insert('services_keys')
+        ->fields(array('kid', 'title', 'domain'))
+        ->values(array(
+          'kid' => $key['kid'],
+          'title' => $key['title'],
+          'domain' => $key['domain'],
+        ))
+        ->execute();
     $return = SAVED_NEW;
   }
   foreach ($key['method_access'] as $method => $value) {
     if ($value) {
-      db_query("INSERT INTO {services_key_permissions} (kid, method) VALUES ('%s', '%s')", $key['kid'], $value);
+      db_insert('services_key_permissions')
+        ->fields(array('kid', 'method'))
+        ->values(array(
+          'kid' => $key['kid'],
+          'method' => $value,
+        ))
+        ->execute();
     }
   }
   return $return; 
 }
 
 function services_keyauth_admin_keys_delete($kid) {
-  db_query("DELETE FROM {services_keys} WHERE kid = '%s'", $kid);
+  db_delete('services_keys')
+      ->condition('kid', $kid)
+      ->execute();
 }
 
-function services_keyauth_admin_keys_delete_confirm(&$form_state, $kid = 0) {
-  $key = db_fetch_object(db_query("SELECT * FROM {services_keys} WHERE kid = '%s'", $kid));
+function services_keyauth_admin_keys_delete_confirm() {
+  $kid = arg(4);
+  
+  $key = db_query("SELECT * FROM {services_keys} WHERE kid = :kid", array(':kid' => $kid))->fetchObject();
 
   $form['kid'] = array('#type' => 'value', '#value' => $key->kid);
 
@@ -151,7 +174,7 @@ function services_keyauth_admin_keys_delete_confirm(&$form_state, $kid = 0) {
 function services_keyauth_admin_keys_delete_confirm_submit($form, &$form_state) {
   services_keyauth_admin_keys_delete($form_state['values']['kid']);
 
-  $t_args = array('%key' => $form_state['kid']);
+  $t_args = array('%key' => $form_state['values']['kid']);
   drupal_set_message(t('The key %key has been deleted.', $t_args));
   watchdog('menu', 'Deleted key %key.', $t_args, WATCHDOG_NOTICE);
 

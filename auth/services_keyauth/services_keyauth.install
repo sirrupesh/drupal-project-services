@@ -6,7 +6,7 @@
  *   Install, uninstall and update the module.
  */
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function services_keyauth_schema() {
   $schema['services_keys'] = array(
@@ -67,17 +67,17 @@ function services_keyauth_schema() {
     ),
   );
   $schema['services_key_permissions'] = array(
-    'description' => t('Stores services method\'s access rights on a per API key basis.'),
+    'description' => 'Stores services method\'s access rights on a per API key basis.',
     'fields' => array(
       'kid' => array(
-        'description' => t('The service key ID.'),
+        'description' => 'The service key ID.',
         'type'        => 'char',
         'length'      => 32,
         'not null'    => TRUE,
         'default'     => '',
       ),
       'method' => array(
-        'description' => t('Name of service method.'),
+        'description' => 'Name of service method.',
         'type'        => 'varchar',
         'length'      => 255,
         'not null'    => TRUE,
@@ -88,24 +88,24 @@ function services_keyauth_schema() {
       'api_key'       => array('kid'),
       'method'        => array('method'),
     ),
-    'unique key' => array('key_method' => array('kid','method')),
+    'unique key' => array('key_method' => array('kid', 'method')),
   );
   return $schema;
 }
 
-function _services_key_auth_permissions (&$update) {
+function _services_key_auth_permissions() {
   $schema['services_key_permissions'] = array(
-    'description' => t('Stores services method\'s access rights on a per API key basis.'),
+    'description' => 'Stores services method\'s access rights on a per API key basis.',
     'fields' => array(
       'kid' => array(
-        'description' => t('The service key ID.'),
+        'description' => 'The service key ID.',
         'type'        => 'char',
         'length'      => 32,
         'not null'    => TRUE,
         'default'     => '',
       ),
       'method' => array(
-        'description' => t('Name of service method.'),
+        'description' => 'Name of service method.',
         'type'        => 'varchar',
         'length'      => 255,
         'not null'    => TRUE,
@@ -116,15 +116,13 @@ function _services_key_auth_permissions (&$update) {
       'api_key'       => array('kid'),
       'method'        => array('method'),
     ),
-    'unique key' => array('key_method' => array('kid','method')),
+    'unique key' => array('key_method' => array('kid', 'method')),
   );
-  db_create_table($update, 'services_key_permissions', $schema['services_key_permissions']);
-
-  return $update;
+  db_create_table('services_key_permissions', $schema['services_key_permissions']);
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function services_keyauth_install() {
   // Legacy tables exist so we just create the new table.
@@ -133,12 +131,12 @@ function services_keyauth_install() {
   }
   else{
     $update = array();
-    _services_key_auth_permissions($update);
+    _services_key_auth_permissions();
   }
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function services_keyauth_uninstall() {
   drupal_uninstall_schema('services_keyauth');
@@ -149,39 +147,31 @@ function services_keyauth_uninstall() {
 
 function services_keyauth_update_6001() {
   $update = array();
-  _services_key_auth_permissions($update);
+  _services_key_auth_permissions();
   return $update;
 }
 
 function services_keyauth_update_6002() {
-  $update = array();
-  db_drop_primary_key($update, 'services_timestamp_nonce');
-  db_add_index($update, 'services_timestamp_nonce', 'nonce', array('nonce'));
-  return $update;
+  db_drop_primary_key('services_timestamp_nonce');
+  db_add_index('services_timestamp_nonce', 'nonce', array('nonce'));
 }
 
 function services_keyauth_update_6003() {
-  $update = array();
-  db_drop_index($update, 'services_timestamp_nonce', 'timestamp');
-  db_change_field($update, 'services_timestamp_nonce', 'timestamp', 'timestamp', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
-  db_add_index($update, 'services_timestamp_nonce', 'timestamp', array('timestamp'));
-  return $update;
+  db_drop_index('services_timestamp_nonce', 'timestamp');
+  db_change_field('services_timestamp_nonce', 'timestamp', 'timestamp', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  db_add_index('services_timestamp_nonce', 'timestamp', array('timestamp'));
 }
 
 /*
  * Update to ensure that new menu options are loaded.
  */
 function services_keyauth_update_6004() {
-  $update = array();
-  return $update;
 }
 
 function services_keyauth_update_6005() {
-  $update = array();
-  
+
   // A table might fail to exist in certain circumstances due to an issue with the install.
   if (!db_table_exists('services_key_permissions')) {
-    _services_key_auth_permissions($update);
+    _services_key_auth_permissions();
   }
-  return $update;
 }

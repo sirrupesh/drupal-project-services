@@ -6,27 +6,27 @@
  *  Provides a key based validation system.
  */
 /**
- * Implementation of hook_cron().
+ * Implements hook_cron().
  *
  * Clear down old values from the nonce table.
  */
 function services_keyauth_cron() {
-  $expiry_time = time() - variable_get('services_key_expiry', 30);
-  db_query("DELETE FROM {services_timestamp_nonce}
-    WHERE timestamp < '%s'", $expiry_time);
+  $expiry_time = REQUEST_TIME - variable_get('services_key_expiry', 30);
+  db_delete('services_timestamp_nonce')
+    ->condition('timestamp', $expiry_time)
+    ->execute();
 }
 
 /**
- * This function is called to determine whether the current user has 
+ * This function is called to determine whether the current user has
  * access to a keys configuration.
- * 
  */
 function services_keyauth_access() {
-  return user_access('administer services') && variable_get('services_use_key', TRUE);
+  return user_access('administer services') && variable_get('services_use_key', FALSE);
 }
 
 /**
- * Implementation of hook_authentication_info().
+ * Implements hook_authentication_info().
  *
  * @return array
  *  The configuration array for the authentication scheme
@@ -47,7 +47,7 @@ function services_keyauth_authentication_info() {
 }
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function services_keyauth_menu() {
   $items = array();
@@ -71,7 +71,7 @@ function services_keyauth_menu() {
   $items['admin/build/services/keys/%/delete'] = array(
     'access arguments'  => array('administer services'),
     'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('services_keyauth_admin_keys_delete_confirm', 4),
+    'page arguments'    => array('services_keyauth_admin_keys_delete_confirm'),
     'file'              => 'services_keyauth.admin.inc',
     'type'              => MENU_CALLBACK,
   );
@@ -98,7 +98,7 @@ function services_get_hash($timestamp, $domain, $nonce, $method, $args) {
   foreach ($method['#args'] as $key => $arg) {
     if ($arg['#signed'] == TRUE) {
       if (is_numeric($args[$key]) || !empty($args[$key])) {
-        if (is_array($args[$key]) || is_object($args[$key])){
+        if (is_array($args[$key]) || is_object($args[$key])) {
           $hash_parameters[] = serialize($args[$key]);
         }
         else{
@@ -110,7 +110,8 @@ function services_get_hash($timestamp, $domain, $nonce, $method, $args) {
       }
     }
   }
-  $api_key = db_result(db_query("SELECT kid FROM {services_keys} WHERE domain = '%s'", $domain));
+
+  $api_key = db_query("SELECT kid FROM {services_keys} WHERE domain = :key", array(':key' => $domain))->fetchField('kid');
   return hash_hmac("sha256", implode(';', $hash_parameters), $api_key);
 }
 
@@ -128,17 +129,9 @@ function services_keyauth_get_keys() {
   if (!$keys) {
     $keys = array();
     $result = db_query("SELECT * FROM {services_keys}");
-    while ($key = db_fetch_object($result)) {
+    while ($key = $result->fetchObject()) {
       $keys[$key->kid] = $key;
     }
   }
   return $keys;
-}
-
-function service_keyauth_disable() {
-  cache_clear_all('services:methods', 'cache');
-}
-
-function service_keyauth_enable() {
-  cache_clear_all('services:methods', 'cache');
 }

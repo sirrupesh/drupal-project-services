@@ -7,21 +7,21 @@
  */
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function services_schema() {
   return array();
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function services_install() {
   drupal_install_schema('services');
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function services_uninstall() {
   drupal_uninstall_schema('services');
@@ -42,7 +42,7 @@ function services_uninstall() {
 }
 
 /**
- * Implementation of hook_update().
+ * Implements hook_update().
  *
  * Create the nonce table
  */

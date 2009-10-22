@@ -14,24 +14,23 @@ function services_admin_browse_index() {
 
   // Show enable server modules
   $servers = module_implements('server_info');
-  $output = '<h2>'. t('Servers') .'</h2>';
+  $output = '<h2>' . t('Servers') . '</h2>';
 
   if (!empty($servers)) {
     $output .= '<ul>';
     foreach ($servers as $module) {
       $info = module_invoke($module, 'server_info');
       $name = $info['#name'];
-      $path = 'services/'. $info['#path'];
-      $output .= '<li class="leaf">'. l($name .' - /'. $path, $path) .'</li>';
+      $path = 'services/' . $info['#path'];
+      $output .= '<li class="leaf">' . l($name . ' - /' . $path, $path) . '</li>';
     }
     $output .= '</ul>';
   }
   else {
-    $output .= '<p>'. t('You must enable at least one server module to be able to connect remotely. Visit the <a href="@url">modules</a> page to enable server modules.', array('@url' => url('admin/build/modules'))) .'</p>';
+    $output .= '<p>' . t('You must enable at least one server module to be able to connect remotely. Visit the <a href="@url">modules</a> page to enable server modules.', array('@url' => url('admin/build/modules'))) . '</p>';
   }
 
-
-  $output .= '<h2>'. t('Services') .'</h2>';
+  $output .= '<h2>' . t('Services') . '</h2>';
 
   // group namespaces
   $services = array();
@@ -42,10 +41,10 @@ function services_admin_browse_index() {
 
   if (count($services)) {
     foreach ($services as $namespace => $methods) {
-      $output .= '<h3>'. $namespace .'</h3>';
+      $output .= '<h3>' . $namespace . '</h3>';
       $output .= '<ul>';
       foreach ($methods as $method) {
-        $output .= '<li class="leaf">'. l($method['#method'], 'admin/build/services/browse/'. $method['#method']) .'</li>';
+        $output .= '<li class="leaf">' . l($method['#method'], 'admin/build/services/browse/' . $method['#method']) . '</li>';
       }
       $output .= '</ul>';
     }
@@ -62,31 +61,32 @@ function services_admin_browse_method($method) {
 
   $output = '';
 
-  $output .= '<h3>'. $method['#method'] .'</h3>';
-  $output .= '<p>'. $method['#help'] .'</p>';
+  $output .= '<h3>' . $method['#method'] . '</h3>';
+  $output .= '<p>' . $method['#help'] . '</p>';
 
   // List arguments.
-  $output .= '<h3>'. t('Arguments') .' ('. count($method['#args']) .')</h3>';
+  $output .= '<h3>' . t('Arguments') . ' (' . count($method['#args']) . ')</h3>';
   $output .= '<dl id="service-browser-arguments">';
   $count = 0;
   foreach ($method['#args'] as $arg) {
     $count++;
-    $output .= '<dt><em class="type">'. $arg['#type'] .'</em><strong class="name">'.
-      $arg['#name'] .'</strong> ('. (($arg['#optional']) ? t('optional') : t('required')) .')</dt>';
-    $output .= '<dd>'. $arg['#description'] .'</dd>';
+    $output .= '<dt><em class="type">' . $arg['#type'] . '</em><strong class="name">' .
+      $arg['#name'] . '</strong> (' . (($arg['#optional']) ? t('optional') : t('required')) . ')</dt>';
+    $output .= '<dd>' . $arg['#description'] . '</dd>';
   }
 
   $output .= '</dl>';
 
   // Allow testing of methods
-  $output .= '<h3>'. t('Call method') .'</h3>';
-  $output .= drupal_get_form('services_admin_browse_test');
+  $output .= '<h3>' . t('Call method') . '</h3>';
+  // @TODO this is a hack we should be trying to return a structure array if it is possible - this is just to fix existing behaviour
+  $output .= drupal_render(drupal_get_form('services_admin_browse_test'));
 
   // Display results
   if ($_services_admin_browse_test_submit_result) {
     $output .= '<div id="output">';
-    $output .= '<h3>'. t('Result') .'</h3>';
-    $output .= '<code>'. $_services_admin_browse_test_submit_result .'</code>';
+    $output .= '<h3>' . t('Result') . '</h3>';
+    $output .= '<code>' . $_services_admin_browse_test_submit_result . '</code>';
     $output .= '</div>';
   }
 
@@ -101,21 +101,21 @@ function services_admin_browse_test() {
   $form['format'] = array('#tree' => TRUE);
 
   foreach ($method['#args'] as $key => $arg) {
-    $form['name'][$key]         = array(
+    $form['name'][$key] = array(
       '#value' => $arg['#name']
     );
-    $form['optional'][$key]     = array(
+    $form['optional'][$key] = array(
       '#value' => ($arg['#optional']) ? t('optional') : t('required')
     );
 
     if (isset($arg['#size']) && $arg['#size'] == 'big') {
       $form['arg'][$key] = array(
-        '#type'           => 'textarea'
+        '#type' => 'textarea'
       );
     }
     else {
       $form['arg'][$key] = array(
-        '#type'           => 'textfield'
+        '#type' => 'textfield'
       );
     }
 
@@ -145,8 +145,8 @@ function services_admin_browse_test() {
   services_auth_invoke('alter_browse_form', $form, $method);
 
   $form['submit'] = array(
-    '#type'           => 'submit',
-    '#value'          => t('Call method')
+    '#type' => 'submit',
+    '#value' => t('Call method')
   );
 
   $form['#redirect'] = FALSE;
@@ -160,7 +160,7 @@ function services_admin_browse_test_submit($form, $form_state) {
   // Allow the authorization module to handle submitted values.
   services_auth_invoke('alter_browse_form_submit', $method, $args);
   $result = services_method_call($method['#method'], $args, TRUE);
-  $_services_admin_browse_test_submit_result = '<pre>'. htmlspecialchars(print_r($result, TRUE)) .'</pre>';
+  $_services_admin_browse_test_submit_result = '<pre>' . htmlspecialchars(print_r($result, TRUE)) . '</pre>';
 }
 
 function services_admin_browse_test_unserialize_args($values, $formats) {
@@ -269,10 +269,10 @@ function services_admin_settings() {
       '#options' => $auth_options,
       '#required' => FALSE,
       '#default_value' => variable_get('services_auth_module', ''),
-      '#ahah' => array(
+      '#ajax' => array(
+        'callback' => '_services_ahah_security_options',
         'path' => 'admin/services/ahah/security-options',
         'wrapper' => 'security-module-options',
-        'method' => 'replace',
       ),
     );
 
@@ -281,10 +281,6 @@ function services_admin_settings() {
     $form['security']['options'] = array(
       '#prefix' => '<div id="security-module-options">',
       '#suffix' => '</div>',
-      'settings' => array(
-        '#value' => sprintf('<div class="description">%s</div>',
-          t('Select a authorization module to configure security')),
-      ),
     );
     // Get the configuration form for the authorization module
     $settings = services_auth_invoke('security_settings');
@@ -314,16 +310,17 @@ function services_admin_settings_validate($form, $form_state) {
 
 function services_admin_settings_submit($form, $form_state) {
   // Update the services oauth module variable *if needed*.
+  
   $old_auth = variable_get('services_auth_module', '');
   $new_auth = $form_state['values']['auth_module'];
   if ($old_auth != $new_auth) {
     variable_set('services_auth_module', $new_auth);
     // Rebuild menu so that security-related menu items can be conditionally created.
     menu_rebuild();
-    drupal_set_message('Changed authentication method');
+    drupal_set_message(t('Changed authentication method'));
   }
   else {
-    drupal_set_message('Updated authentication settings');
+    drupal_set_message(t('Updated authentication settings'));
   }
 
   // Allow the authorization module to handle submitted values.
@@ -336,32 +333,12 @@ function services_admin_settings_submit($form, $form_state) {
 /**
  * Callback for the security configuration form ahah.
  */
-function _services_ahah_security_options() {
-  $cached_form_state = array();
-  $cached_form = form_get_cache($_POST['form_build_id'], $cached_form_state);
-
+function _services_ahah_security_options($form, &$form_state) {
   if (!empty($_POST['auth_module'])) {
     $settings = services_auth_invoke_custom($_POST['auth_module'], 'security_settings');
   }
-
-  if (is_array($settings)) {
-    $cached_form['security']['options']['settings'] = $settings;
-  }
-  else {
-    unset($cached_form['security']['options']['settings']);
-  }
-
-  form_set_cache($_POST['form_build_id'], $cached_form, $cached_form_state);
-
-  $form_state = array('submitted' => FALSE);
-  $options = $cached_form['security']['options'];
-  unset($options['#prefix'], $options['#suffix']);
-  $options = form_builder('_services_ahah_security_options', $options, $form_state);
-  $output = drupal_render($options);
-
-  print drupal_to_js(array(
-    'status' => TRUE,
-    'data' => $output,
-  ));
-  exit;
+  
+  $settings['security']['options']['#prefix'] = '<div id="security-module-options">';
+  $settings['security']['options']['#sufix'] = '</div>';
+  return drupal_render($settings);
 }

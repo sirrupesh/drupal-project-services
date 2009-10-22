@@ -1,6 +1,8 @@
 ; $Id$
 name = XMLRPC Server
 description = Provides an XMLRPC server.
+files[] = xmlrpc_server.module
 package = Services - servers
 dependencies[] = services
-core = 6.x
+core = 7.x
+php = 5.x

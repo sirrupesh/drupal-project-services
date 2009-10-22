@@ -1,6 +1,10 @@
 ; $Id$
 name = Services
 description = Provide an API for creating web services.
+files[] = services.module
+files[] = services_admin_browse.inc
+files[] = services.resource-translation.inc
+files[] = services.install
 package = Services
-core = 6.x
-php = 5.x 
+core = 7.x
+php = 5.x

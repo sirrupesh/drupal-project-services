@@ -7,7 +7,7 @@
  */
 
 /**
- * Implementation of hook_server_info().
+ * Implements hook_server_info().
  */
 function xmlrpc_server_server_info() {
   return array(
@@ -16,9 +16,12 @@ function xmlrpc_server_server_info() {
   );
 }
 
+/**
+ * Implements hook_server_server().
+ */
 function xmlrpc_server_server() {
-  require_once './includes/xmlrpc.inc';
-  require_once './includes/xmlrpcs.inc';
+  require_once DRUPAL_ROOT . '/' . 'includes/xmlrpc.inc';
+  require_once DRUPAL_ROOT . '/' . 'includes/xmlrpcs.inc';
   return xmlrpc_server(xmlrpc_server_xmlrpc());
 }
 

@@ -7,13 +7,13 @@
  */
 
 function _services_keyauth_security_settings() {
-  $form['services_use_key'] = array(
+  $form['security']['options']['services_use_key'] = array(
     '#type'           => 'checkbox',
     '#title'          => t('Use keys'),
     '#default_value'  => variable_get('services_use_key', TRUE),
     '#description'    => t('When enabled all method calls need to provide a validation token to autheciate themselves with the server.'),
   );
-  $form['services_key_expiry'] = array(
+  $form['security']['options']['services_key_expiry'] = array(
     '#type'           => 'textfield',
     '#prefix'         => "<div id='services-key-expiry'>",
     '#suffix'         => "</div>",
@@ -21,7 +21,7 @@ function _services_keyauth_security_settings() {
     '#default_value'  => variable_get('services_key_expiry', 30),
     '#description'    => t('The time frame for which the token will be valid. Default is 30 secs'),
   );
-  $form['services_use_sessid'] = array(
+  $form['security']['options']['services_use_sessid'] = array(
     '#type'           => 'checkbox',
     '#title'          => t('Use sessid'),
     '#default_value'  => variable_get('services_use_sessid', TRUE),
@@ -31,15 +31,17 @@ function _services_keyauth_security_settings() {
 }
 
 function _services_keyauth_security_settings_validate($form_state) {
-  if (!preg_match('/^\d+$/', $form_state['values']['services_key_expiry'])) {
+  if (isset($form_state['input']['services_key_expiry']) && !preg_match('/^\d+$/', $form_state['input']['services_key_expiry'])) {
     form_set_error('services_key_expiry', t('The token expiry time must specified in whole seconds as a number'));
   }
 }
 
 function _services_keyauth_security_settings_submit($form_state) {
   // Store all values from "our" form as variables.
-  foreach (_services_keyauth_security_settings() as $key => $field) {
-    variable_set($key, $form_state['values'][$key]);
+  $options = _services_keyauth_security_settings();
+  foreach ($options['security']['options'] as $key => $field) {
+    $value = isset($form_state['input'][$key]) ? $form_state['input'][$key] : 0;
+    variable_set($key, $value);
   }
 }
 
@@ -93,7 +95,7 @@ function _services_keyauth_alter_methods(&$methods) {
         $method['#key'] = TRUE;
         $method['#auth'] = TRUE;
     }
-    
+
     if ($method['#auth'] && variable_get('services_use_sessid', TRUE)) {
       array_unshift($method['#args'], $arg_sessid);
     }
@@ -116,8 +118,8 @@ function _services_keyauth_alter_browse_form(&$form, $method) {
           '#title'          => 'Hash',
           '#type'           => 'textfield',
           '#value'          => t('Gets generated after form submission'),
-          '#disabled'       => TRUE
-         );
+          '#disabled'       => TRUE,
+        );
         break;
       case 'sessid':
         $form['arg'][$key]['#default_value']  = session_id();
@@ -130,8 +132,8 @@ function _services_keyauth_alter_browse_form(&$form, $method) {
            '#title'          => 'Timestamp',
            '#type'           => 'textfield',
            '#value'          => t('Gets generated after form submission'),
-           '#disabled'       => TRUE
-         );
+           '#disabled'       => TRUE,
+        );
         break;
       case 'nonce':
         $form['arg'][$key]['#default_value'] = user_password();
@@ -149,30 +151,35 @@ function _services_keyauth_authenticate_call($method, $method_name, &$args) {
 
     $expiry_time = $timestamp + variable_get('services_key_expiry', 30);
 
-    if ($expiry_time < time()) {
+    if ($expiry_time < REQUEST_TIME) {
       return services_error(t('Token has expired.'), 401);
     }
+    $has_rows = (bool) db_query_range("SELECT 1 FROM {services_timestamp_nonce} WHERE domain = :domain AND nonce = :nonce", 0, 1, array(':domain' => $domain, ':nonce' => $nonce))->fetchField();
 
     // Still in time but has it been used before
-    if (db_result(db_query("SELECT count(*) FROM {services_timestamp_nonce}
-        WHERE domain = '%s' AND nonce = '%s'",
-        $domain, $nonce))) {
+    if ($has_rows) {
       return services_error(t('Token has been used previously for a request. Re-try with another nonce key.', 401));
     }
     else{
-      db_query("INSERT INTO {services_timestamp_nonce} (domain, timestamp, nonce)
-        VALUES ('%s', %d, '%s')", $domain, $timestamp, $nonce);
+      db_insert('services_timestamp_nonce')
+        ->fields(array('domain', 'timestamp', 'nonce'))
+        ->values(array(
+          'domain' => $domain,
+          'timestamp' => $timestamp,
+          'nonce' => $nonce,
+        ))
+        ->execute();
     }
 
-    $api_key = db_result(db_query("SELECT kid FROM {services_keys} WHERE domain = '%s'", $domain));
+    $api_key = db_query("SELECT kid FROM {services_keys} WHERE domain = :key", array(':key' => $domain))->fetchField('kid');
 
     //if (!services_keyauth_validate_key($api_key, $timestamp, $domain, $nonce, $method_name, $hash_parameters, $hash)) {
     if ($hash != services_get_hash($timestamp, $domain, $nonce, $method, $args)) {
       return services_error(t('Invalid API key.'), 401);
     }
     
-    if (!db_result(db_query("SELECT COUNT(*) FROM {services_key_permissions} 
-        WHERE kid = '%s' AND method = '%s'", $api_key, $method_name))) {
+    $has_rows = (bool) db_query_range("SELECT 1 FROM {services_key_permissions} WHERE kid = :kid AND method = :method", 0, 1, array(':kid' => $api_key, ':method' => $method_name))->fetchField();
+    if (!$has_rows) {
       return services_error(t('Access denied.'), 401);
     }
   }
@@ -191,7 +198,7 @@ function _services_keyauth_authenticate_call($method, $method_name, &$args) {
 function _services_keyauth_alter_browse_form_submit($method, &$args) {
   if ($method['#key'] && variable_get('services_use_key', TRUE)) {
     $args_stripped = $args;
-  
+
     for ($i = 1; $i <= 4; $i++) {
       array_shift($args_stripped);
     }

@@ -1,6 +1,10 @@
 <?php
 // $Id$
-
+/**
+ * @author Services Dev Team
+ * @file
+ *  Provides a CRUD functions for services.
+ */
 function _services_resource_as_services($resource) {
   static $controllers = array(
     '#create' => 'create',
@@ -60,7 +64,7 @@ function _services_services_as_resources($services) {
     $controller = $service;
     $controller['#args'] = array();
 
-    foreach($service['#args'] as $arg) {
+    foreach ($service['#args'] as $arg) {
       $arg['#source'] = array(
         'data' => $arg['#name'],
       );
