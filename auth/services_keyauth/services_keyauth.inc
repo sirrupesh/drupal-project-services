@@ -171,7 +171,7 @@ function _services_keyauth_alter_browse_form(&$form, $method) {
         break;
       case 'nonce':
         $form['arg'][$key]['#title']  = t('Nonce');
-        $form['arg'][$key]['#default_value'] = user_password();
+        $form['arg'][$key]['#value'] = user_password();
         break;
     }
   }
