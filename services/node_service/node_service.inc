@@ -134,6 +134,10 @@ function node_service_save($edit) {
     $_GET['translation'] = $edit['tnid'];
   }
 
+  global $language;
+  $languages = language_list();
+  $language = isset($languages[$edit['language']]) ? $languages[$edit['language']] : $language;
+
   if ($edit['nid']) {
     $node = node_load($edit['nid']);
     if ($node->nid) {
