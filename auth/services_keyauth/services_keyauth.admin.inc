@@ -53,9 +53,14 @@ function services_keyauth_admin_keys_form() {
 
   $key_kid = isset($key->kid) ? $key->kid : '';
   $key_title = isset($key->title) ? $key->title : '';
+  $domain = isset($key->domain) ? $key->domain : '';
   $form['kid'] = array(
-    '#type'           => 'hidden',
-    '#default_value'  => $key_kid,
+    '#type' => 'value',
+    '#value'  => $key_kid,
+  );
+  $form['previous_domain'] = array(
+    '#type' => 'value',
+    '#value'  => $domain,
   );
 
   $accessible_methods = array();
@@ -80,7 +85,7 @@ function services_keyauth_admin_keys_form() {
   $form['domain'] = array(
     '#title'          => t('Allowed domain'),
     '#type'           => 'textfield',
-    '#default_value'  => isset($key->domain) ? $key->domain : '',
+    '#default_value'  => $domain,
     '#description'    => t('External domain allowed to use this key.'),
     '#required'       => TRUE,
   );
@@ -110,10 +115,12 @@ function services_keyauth_admin_keys_form() {
  * Validate callback for services_keyauth_admin_keys_form().
  */
 function services_keyauth_admin_keys_form_validate($form, &$form_state) {
-  $domain = $form_state['values']['domain'];
-  $is_existing =  db_result(db_query("SELECT count(*) FROM {services_keys} WHERE domain = '%s'", $domain));
-  if ($is_existing) {
-    form_set_error('domain', t('Domain @domain already exists.', array('@domain', $domain)));
+  $domain = trim($form_state['values']['domain']);
+  $previous_domain = trim($form_state['values']['previous_domain']);
+  if ($previous_domain != $domain) {
+    if (db_result(db_query("SELECT count(*) FROM {services_keys} WHERE domain = '%s'", $domain))) {
+      form_set_error('domain', t('Domain @domain already exists.', array('@domain', $domain)));
+    }
   }
 }
 
