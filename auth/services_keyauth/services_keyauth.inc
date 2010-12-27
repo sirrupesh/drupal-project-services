@@ -231,7 +231,7 @@ function _services_keyauth_authenticate_call($method, $method_name, &$args) {
   if ($method['auth'] && variable_get('services_use_sessid', TRUE)) {
     $sessid = array_shift($args);
     if (empty($sessid)) {
-      return t('Invalid sessid.');
+      return services_error(t('Invalid sessid.'), 401);
     }
     $session_backup = services_session_load($sessid);
   }
