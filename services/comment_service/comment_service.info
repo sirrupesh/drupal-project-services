@@ -1,4 +1,3 @@
-; $Id$
 name = Comment Service
 description = Provides a comment service.
 package = Services - services

@@ -1,4 +1,3 @@
-; $Id$
 core            = "6.x"
 dependencies[]  = services
 description     = "Provides a file service."

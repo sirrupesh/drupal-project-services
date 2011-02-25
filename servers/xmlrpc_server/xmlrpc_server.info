@@ -1,4 +1,3 @@
-; $Id$
 name = XMLRPC Server
 description = Provides an XMLRPC server.
 files[] = xmlrpc_server.module
