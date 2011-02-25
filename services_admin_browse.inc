@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * The file contains code which is used to create the services testing interface

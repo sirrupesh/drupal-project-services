@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * This install creates the tables which are required by the services module 
