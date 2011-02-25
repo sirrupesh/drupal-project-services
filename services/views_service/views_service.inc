@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  *  Link general views functionalities to services module.

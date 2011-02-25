@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  *  Browser thru all services and servers.

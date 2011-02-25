@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  *  Link general node functionalities to services module.

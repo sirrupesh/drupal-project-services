@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  *  Link general search functionalities to services module.
