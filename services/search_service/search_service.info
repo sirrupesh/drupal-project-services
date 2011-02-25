@@ -1,4 +1,3 @@
-; $Id$
 name = Search Service
 description = Provides a search service.
 package = Services - services

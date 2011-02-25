@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * Adds a service type for a menu
