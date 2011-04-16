@@ -171,7 +171,22 @@ function user_service_save($account) {
       'pass2' => $account['pass'],
     );
     $form_state['values']['op'] = t('Create new account');
-    $ret = drupal_execute('user_register', $form_state);
+
+    // reset to anonymous user
+    global $user;
+    $orig_user = $user;
+    session_save_session(FALSE);
+    $user = user_load(array('uid' => 0));
+
+    // execute the register form
+    drupal_execute('user_register', $form_state);
+
+    // find and store the new user into the form_state
+    $form_state['user'] = user_load(array('name' => $form_state['values']['name']));
+
+    // revert back to the original user.
+    $user = $orig_user;
+    session_save_session(TRUE);
   }
   else {
     // If a profile category was passed in, use it. Otherwise default
