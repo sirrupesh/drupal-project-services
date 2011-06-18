@@ -15,8 +15,8 @@
  *   An array of fields to be returned, for use in limiting the
  *   size of data returned to only that which is necessary.
  * @param $language
- *   The language code of the menu to return. Optional if site 
- *   has only one language (or i18n is not installed <- verify)
+ *   The language code of the menu to return. Optional if site
+ *   has only one language (or i18n is not installed)
  *
  * @return
  *   An array of all child menu items from a given menu item.
@@ -28,6 +28,12 @@ function menu_service_get($menu_id = NULL, $fields = array(), $language = '') {
   if (sizeof($fields) === 0) {
     $fields = FALSE;
   }
+
+  $languages = language_list();
+  if (isset($languages[$language])) {
+    $GLOBALS['language'] = $languages[$language];
+  }
+
   $data = menu_tree_all_data($menu_id);
   return menu_service_process($data, $fields, $language);
 }
