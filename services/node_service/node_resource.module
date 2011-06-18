@@ -62,6 +62,13 @@ function node_resource_service_resource() {
         '#file' => array('file' => 'inc', 'module' => 'node_resource'),
         '#args' => array(
           array(
+            '#name' => 'nid',
+            '#optional' => FALSE,
+            '#source' => array('path' => 0),
+            '#type' => 'int',
+            '#description' => 'The nid of the node to get',
+          ),
+          array(
             '#name' => 'node',
             '#optional' => FALSE,
             '#source' => 'data',
