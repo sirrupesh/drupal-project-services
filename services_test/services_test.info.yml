@@ -4,5 +4,4 @@ description: A service provider test for the Services module.
 core: 8.x
 package: Services
 dependencies:
-  - services
-
+  - services:services
