@@ -4,6 +4,6 @@ description: A standardized solution of integrating external applications with D
 core: 8.x
 package: Services
 dependencies:
-  - ctools
-  - serialization
+  - ctools:ctools
+  - drupal:serialization
 
