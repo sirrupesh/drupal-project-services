@@ -257,7 +257,7 @@ class RESTServer {
    *  Returns the formatted resource uri
    */
   public function uri_formatter($path) {
-    return url($this->context->getEndpointPath() . '/' . join($path, '/'), array(
+    return url($this->context->getEndpointPath() . '/' . join('/', $path), array(
       'absolute' => TRUE,
     ));
   }
