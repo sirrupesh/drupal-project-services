@@ -17,7 +17,7 @@ class ServiceEndpoint {
   public function routes() {
     $routes = array();
 
-    foreach (\Drupal::entityManager()->getStorage('service_endpoint')->loadMultiple() as $endpoint) {
+    foreach (\Drupal::entityTypeManager()->getStorage('service_endpoint')->loadMultiple() as $endpoint) {
       foreach ($endpoint->loadResourceProviders() as $resource) {
 
         $instance = $resource->createServicePluginInstance();

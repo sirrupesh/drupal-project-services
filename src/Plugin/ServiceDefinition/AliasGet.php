@@ -4,7 +4,7 @@ namespace Drupal\services\Plugin\ServiceDefinition;
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableDependencyInterface;
-use Drupal\Core\Path\AliasManagerInterface;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\Entity\Node;
@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 class AliasGet extends ServiceDefinitionBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var \Drupal\Core\Path\AliasManagerInterface
+   * @var Drupal\path_alias\AliasManagerInterface
    */
   protected $aliasManager;
 
@@ -45,7 +45,7 @@ class AliasGet extends ServiceDefinitionBase implements ContainerFactoryPluginIn
    * @param array $configuration
    * @param string $plugin_id
    * @param mixed $plugin_definition
-   * @param \Drupal\Core\Path\AliasManagerInterface $alias_manager
+   * @param Drupal\path_alias\AliasManagerInterface $alias_manager
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, AliasManagerInterface $alias_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);

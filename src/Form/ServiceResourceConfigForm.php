@@ -53,10 +53,10 @@ class ServiceResourceConfigForm extends ServiceResourceBaseForm {
     $status = $this->entity->save();
 
     if ($status) {
-      drupal_set_message('Resource has been saved successfully.');
+      $this->messenger()->addMessage('Resource has been saved successfully.');
     }
 
-    $form_state->setRedirectUrl($this->entity->getEndpoint()->urlInfo('resources'));
+    $form_state->setRedirectUrl($this->entity->getEndpoint()->toUrl('resources'));
   }
 
 }

@@ -10,8 +10,8 @@ use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
-use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Entity\EntityAccessCheck;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -23,7 +23,7 @@ class ServicesEntityCreateAccessCheck implements AccessInterface {
   /**
    * The entity manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityManager;
 
@@ -41,10 +41,10 @@ class ServicesEntityCreateAccessCheck implements AccessInterface {
   /**
    * Constructs a EntityCreateAccessCheck object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
    *   The entity manager.
    */
-  public function __construct(EntityManagerInterface $entity_manager, SerializerInterface $serializer) {
+  public function __construct(EntityTypeManagerInterface $entity_manager, SerializerInterface $serializer) {
     $this->entityManager = $entity_manager;
     $this->request = \Drupal::request();
     $this->serializer = $serializer;

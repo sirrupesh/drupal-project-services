@@ -28,6 +28,13 @@ use Drupal\services\ServiceResourceInterface;
  *   links = {
  *     "config-form" = "/admin/structure/service_endpoint/{service_endpoint}/resource/{plugin_id}",
  *     "delete-form" = "/admin/structure/service_endpoint/{service_endpoint}/resource/{plugin_id}/delete"
+ *    },
+ *   config_export = {
+ *     "id",
+ *     "service_plugin_id",
+ *     "service_endpoint_id",
+ *     "formats",
+ *     "authentication",
  *   }
  * )
  */
