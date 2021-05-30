@@ -1,8 +1,5 @@
 <?php
-/**
- * @file
- * Contains Drupal\services\Entity\EntityAccessCheck
- */
+
 namespace Drupal\services\Entity;
 
 use Drupal\Core\Access\AccessResult;
@@ -10,9 +7,7 @@ use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
-use Drupal\Core\Entity\EntityAccessCheck;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 
 /**
@@ -65,7 +60,6 @@ class ServicesEntityCreateAccessCheck implements AccessInterface {
    */
   public function access(Route $route, RouteMatchInterface $route_match, AccountInterface $account) {
     $entity_type_id = $route->getRequirement($this->requirementsKey);
-    $entity_type = $this->entityManager->getDefinition($entity_type_id);
     $format = $this->request->getContentType();
     $content = $this->request->getContent();
     $content_decoded = $this->serializer->decode($content, $format);

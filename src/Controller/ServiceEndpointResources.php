@@ -17,7 +17,7 @@ class ServiceEndpointResources extends ControllerBase {
   /**
    * Service definition plugin manager.
    *
-   * @var \Drupal\Component\Plugin\PluginManagerInterface.
+   * @var \Drupal\Component\Plugin\PluginManagerInterface
    */
   protected $pluginManager;
 
@@ -71,12 +71,12 @@ class ServiceEndpointResources extends ControllerBase {
         $rows[] = $row;
       }
 
-      $build[$category]['table'] = array(
+      $build[$category]['table'] = [
         '#type' => 'table',
         '#rows' => $rows,
         '#header' => $this->buildHeader(),
         '#empty' => $this->t('No service definitions exist'),
-      );
+      ];
     }
 
     return $build;

@@ -23,14 +23,14 @@ class ServiceDefinitionEntityRequestContentBase extends ServiceDefinitionBase im
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static ($configuration, $plugin_id, $plugin_definition, $container->get('entity_type.manager'));
+    return new static($configuration, $plugin_id, $plugin_definition, $container->get('entity_type.manager'));
   }
 
   /**
    * @param array $configuration
    * @param string $plugin_id
    * @param mixed $plugin_definition
-   * @param EntityTypeManagerInterface $manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $manager
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -47,7 +47,7 @@ class ServiceDefinitionEntityRequestContentBase extends ServiceDefinitionBase im
     $content = $request->getContent();
     if (!empty($content)) {
       $entity_type_id = $this->getDerivativeId();
-      /* @var $entity_type \Drupal\Core\Entity\EntityTypeInterface */
+      /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
       $entity_type = $this->manager->getDefinition($entity_type_id);
 
       return $serializer->deserialize($content, $entity_type->getClass(), $request->getContentType(), ['entity_type' => $entity_type_id]);

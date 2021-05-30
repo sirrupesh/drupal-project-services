@@ -44,7 +44,7 @@ class ServiceEndpointForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    /* @var $service_endpoint \Drupal\services\Entity\ServiceEndpoint */
+    /** @var \Drupal\services\Entity\ServiceEndpoint $service_endpoint */
     $service_endpoint = $this->entity;
     $form['label'] = [
       '#type' => 'textfield',

@@ -2,7 +2,7 @@
 
 namespace Drupal\services\Plugin\ServiceDefinition;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface; 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\services\ServiceDefinitionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -44,7 +44,7 @@ class EntityIndex extends ServiceDefinitionBase implements ContainerFactoryPlugi
   /**
    * @param array $configuration
    * @param string $plugin_id
-   * @param mixed $plugin_definition 
+   * @param mixed $plugin_definition
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {

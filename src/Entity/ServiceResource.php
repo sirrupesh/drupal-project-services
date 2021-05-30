@@ -262,7 +262,7 @@ class ServiceResource extends ConfigEntityBase implements ServiceResourceInterfa
   /**
    * Authentication collector.
    *
-   * @return \Drupal\Core\Authentication\AuthenticationCollectorInterface.
+   * @return \Drupal\Core\Authentication\AuthenticationCollectorInterface
    *   An authentication collection object.
    */
   protected function authenticationCollector() {

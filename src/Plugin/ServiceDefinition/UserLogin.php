@@ -45,7 +45,7 @@ class UserLogin extends ServiceDefinitionBase implements ContainerFactoryPluginI
    *   The flood service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_manager
    *   The entity manager service.
-   * @param Session $session
+   * @param \Symfony\Component\HttpFoundation\Session\Session $session
    */
   public function __construct($configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, UserAuthInterface $user_auth, FloodInterface $flood, EntityTypeManagerInterface $entity_manager, Session $session) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -87,10 +87,10 @@ class UserLogin extends ServiceDefinitionBase implements ContainerFactoryPluginI
       $content = $serializer->decode($request->getContent(), $request->getContentType());
     }
     else {
-      throw new HttpException(500, $this->t('The appropriate DecoderInterface was not found.'));
+      throw new HttpException(500, 'The appropriate DecoderInterface was not found.');
     }
     if (!isset($content)) {
-      throw new HttpException(500, $this->t('The content of the request was empty.'));
+      throw new HttpException(500, 'The content of the request was empty.');
     }
     $flood_config = $this->configFactory->get('user.flood');
     $username = $content['username'];
@@ -103,7 +103,7 @@ class UserLogin extends ServiceDefinitionBase implements ContainerFactoryPluginI
     // in to many different user accounts.  We have a reasonably high limit
     // since there may be only one apparent IP for all users at an institution.
     if ($this->flood->isAllowed('services.failed_login_ip', $flood_config->get('ip_limit'), $flood_config->get('ip_window'))) {
-      $accounts = $this->entityManager->getStorage('user')->loadByProperties(array('name' => $username, 'status' => 1));
+      $accounts = $this->entityManager->getStorage('user')->loadByProperties(['name' => $username, 'status' => 1]);
       $account = reset($accounts);
       if ($account) {
         if ($flood_config->get('uid_only')) {
