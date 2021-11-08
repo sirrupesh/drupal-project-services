@@ -6,4 +6,4 @@ package: Services
 dependencies:
   - ctools:ctools
   - drupal:serialization
-
+  - drupal:path_alias
