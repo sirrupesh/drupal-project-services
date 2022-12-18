@@ -1,7 +1,7 @@
-name: Services Test
+name: Services Test (obsolete)
 type: module
 description: A service provider test for the Services module.
-core_version_requirement: ^8 || ^9
-package: Services
+package: Testing
+hidden: true
 dependencies:
   - services:services
