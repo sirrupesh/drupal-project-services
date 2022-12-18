@@ -3,6 +3,7 @@
 namespace Drupal\services\StackMiddleware;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
@@ -21,7 +22,7 @@ class FormatSetter implements HttpKernelInterface {
    *
    * @var \Symfony\Component\HttpKernel\HttpKernelInterface
    */
-  protected $httpKernel;
+  protected HttpKernelInterface $httpKernel;
 
   /**
    * Constructs a PageCache object.
@@ -36,7 +37,7 @@ class FormatSetter implements HttpKernelInterface {
   /**
    * {@inheritdoc}
    */
-  public function handle(Request $request, $type = self::MASTER_REQUEST, $catch = TRUE) {
+  public function handle(Request $request, int $type = self::MAIN_REQUEST, bool $catch = TRUE) : Response {
     if ($request->headers->has('Accept')) {
       $request->setRequestFormat($request->getFormat($request->headers->get('Accept')));
     }
