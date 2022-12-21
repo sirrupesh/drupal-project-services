@@ -1,7 +1,9 @@
-name: Services Test (obsolete)
+name: Services Test
 type: module
 description: A service provider test for the Services module.
 package: Testing
 hidden: true
+lifecycle: obsolete
+lifecycle_link: 'https://www.drupal.org/project/services/issues/3327920'
 dependencies:
   - services:services
