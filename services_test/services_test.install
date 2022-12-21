@@ -8,7 +8,7 @@
 /**
  * Uninstall the services_test module.
  */
-function services_test_8401(&$sandbox) {
+function services_test_update_8401(&$sandbox) {
   if (\Drupal::service('module_handler')->moduleExists('services_test')) {
     \Drupal::service('module_installer')->uninstall(['services_test'], FALSE);
   }
